@@ -1,10 +1,20 @@
-all: barserver barclient
+utils := utils.c
+vector := vector.c
+barserver := barserver.c $(utils)
+barclient := barclient.c $(utils)
+multibarserver := multibarserver.c $(utils) $(vector)
+multibarclient := multibarclient.c $(utils) $(vector)
 
-barserver: barserver.c utils.c
-	cc -o barserver barserver.c utils.c
+all: barserver barclient multibarserver multibarclient
 
-barclient: barclient.c utils.c
-	cc -o barclient barclient.c utils.c
+barserver: $(barserver)
+	cc -o barserver $(barserver)
+
+barclient: $(barclient)
+	cc -o barclient $(barclient)
+
+multibarserver: $(multibarserver)
+	cc -o multibarserver $(multibarserver)
 
 clean:
-	rm barclient barserver
+	rm barclient barserver multibarserver multibarclient
