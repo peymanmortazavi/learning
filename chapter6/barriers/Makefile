@@ -16,5 +16,8 @@ barclient: $(barclient)
 multibarserver: $(multibarserver)
 	cc -o multibarserver $(multibarserver)
 
+multibarclient: $(multibarclient)
+	cc -o multibarclient $(multibarclient)
+
 clean:
 	rm barclient barserver multibarserver multibarclient

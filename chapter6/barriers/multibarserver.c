@@ -43,7 +43,7 @@ void listen(char* request_filename) {
             return;
         }
         for (;;) {
-            fprintf(stdout, "Waiting for barrier requests...\n");
+            // fprintf(stdout, "Waiting for barrier requests...\n");
             ssize_t read_bytes;
             if ( (read_bytes = read(request_fd, buffer, NAME_MAX + 1)) < 0) {
                 fprintf(stderr, "Could not read from the file: %s\n", strerror(errno));
@@ -56,7 +56,7 @@ void listen(char* request_filename) {
             }
             if (read_bytes < 2) {
                 fprintf(stderr, "Invalid request: @%ld", read_bytes);
-                write(STDOUT_FILENO, buffer, read_bytes);
+                // write(STDOUT_FILENO, buffer, read_bytes);
                 fprintf(stderr, "\n");
                 continue;
             }
@@ -67,13 +67,16 @@ void listen(char* request_filename) {
             printf("Received request to create barrier %s with len %d\n", name, count);
             vec_dyn_iter(&vec, should_keep_node);
             if (vec_find(&vec, name) == NULL) continue;
-            pid_t child_pid = fork();
-            if (child_pid == 0) {
-                process_barrier(name);
-                exit(0);
-            } else {
-                vec_add(&vec, name, child_pid);
-            }
+            // pid_t child_pid = fork();
+            // if (child_pid == 0) {
+                // exit(0);
+                // fprintf(stdout, "CHILD\n");
+                // close(request_fd);
+                // process_barrier(name);
+                // exit(0);
+            // } else {
+                // vec_add(&vec, name, child_pid);
+            // }
             vec_dyn_iter(&vec, should_keep_node);
         }
     }
