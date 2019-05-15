@@ -9,6 +9,23 @@
 #include "utils.h"
 
 
+void process(char* name) {
+  // open this reply fifo for writing.
+  int reply_fd;
+  while((reply_fd = open(name, O_WRONLY)) != 0 && errno == EINTR);
+  if (reply_fd < 0) {
+    fprintf(stderr, "Could not open reply fifo '%s' for writing: %s\n", name, strerror(errno));
+    return;
+  }
+  char* result = malloc(256 * sizeof(char));
+  int s = sprintf(result, "Your PID was %s :)", name);
+  size_t bytecount = write(reply_fd, result, s);
+  close(reply_fd);
+  fprintf(stdout, "%ld bytes written to the reply pipe %s\n", bytecount, name);
+  free(result);
+}
+
+
 int main(int argc, char* argv[]) {
   // create the request fifo if possible.
   if (create_request_fifo("request") != 0 ) {
@@ -37,6 +54,7 @@ int main(int argc, char* argv[]) {
         break;
       }
       fprintf(stdout, "Received response pipe '%s', going to read from it.\n", buffer);
+      process(buffer);
     }
   }
   return 0;
