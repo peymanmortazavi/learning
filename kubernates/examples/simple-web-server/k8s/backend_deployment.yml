@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: hello-backend-deployment
+    labels:
+        app: hello
+        component: backend
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: hello
+            component: backend
+    template:
+        metadata:
+            labels:
+                app: hello
+                component: backend
+        spec:
+            containers:
+                - name: hello-backend
+                  image: peymanmo/hello:latest
