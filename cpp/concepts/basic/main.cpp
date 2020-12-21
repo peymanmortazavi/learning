@@ -1,6 +1,6 @@
 #include <iostream>
-//#include <concepts>
-//#include <type_traits>
+#include <concepts>
+#include <type_traits>
 
 using namespace std;
 
@@ -16,20 +16,46 @@ concept Drawable = requires (T t) {
 
 };
 
+template<typename T>
+constexpr bool has_name() { return false; }
+
+template<typename T> requires requires (T t) { { t.get_name() } -> std::convertible_to<std::string>; }
+constexpr bool has_name() { return true; }
+
+template<class, class = void>
+struct is_int_constructible : std::false_type{};
+
+template<typename T>
+struct is_int_constructible<T, std::void_t<decltype(T(declval<int>()))>> : std::true_type{};
 
 template<typename T>
 concept DetailDrawable = Drawable<T> && requires(const T& t) {
   { t.DetailDraw() } -> std::convertible_to<int>;
 };
 
+template<Drawable T>
+void test(T drawable) {
+  drawable.Draw();
+}
 
-//template<DetailDrawable T>
-void test(DetailDrawable auto a) {
+void test2(DetailDrawable auto a) {
   a.Draw();
   a.DetailDraw();
 }
 
+
+template<Drawable T>
+void test3(T d) {
+  // Even though the check below is a constant expression and will
+  // get optimized away, if you use d.DetailDraw() it would fail.
+  if (DetailDrawable<T>) {
+    printf("it is DetailDrawable\n");
+  }
+  d.Draw();
+}
+
 struct some {
+  using name = int;
   void Draw() {
     std::cout << "Some" << std::endl;
   }
@@ -47,11 +73,29 @@ struct some_other {
   }
 };
 
+template<typename T> requires is_int_constructible<T>::value
+T test4(int input) { return T(input + 10); }
+
+
+struct int_lover {
+  int x;
+};
+
 
 int main(int argc, char *argv[])
 {
-  //test(some{});
-  test(some_other{});
+  // test only needs a Drawable
+  test(some{});
+
+  // test2 accepts only a DetailDrawable
+  test2(some_other{});
+
+  // test3 supports both Drawable and DetailDrawable
+  test3(some{});
+  test3(some_other{});
+
+  auto x = test4<int_lover>(24);
+  printf("number is %d\n", x.x);
   std::cout << "Welcome to concepts 2020" << std::endl;
   return 0;
 }
