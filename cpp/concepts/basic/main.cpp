@@ -1,6 +1,7 @@
 #include <iostream>
 #include <concepts>
 #include <type_traits>
+#include <string.h>
 
 using namespace std;
 
@@ -92,6 +93,21 @@ struct int_lover {
 };
 
 
+template< typename T, typename G >
+static inline
+std::enable_if_t<std::is_integral_v<G>, bool>
+is_equal(const T& t, G value) {
+  return value == t;
+}
+
+template< typename T, typename G >
+static inline
+std::enable_if_t<std::is_same_v<G, const char*>, bool>
+is_equal(const T& t, G value) {
+  return strcmp(t, value) == 0;
+}
+
+
 int main(int argc, char *argv[])
 {
   // test only needs a Drawable
@@ -110,5 +126,8 @@ int main(int argc, char *argv[])
   auto x = test4<int_lover>(24);
   printf("number is %d\n", x.x);
   std::cout << "Welcome to concepts 2020" << std::endl;
+
+  std::cout << is_equal("Peyman", "Peyman") << std::endl;
+  std::cout << is_equal(12, 12) << std::endl;
   return 0;
 }
