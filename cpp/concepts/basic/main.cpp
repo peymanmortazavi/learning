@@ -54,6 +54,16 @@ void test3(T d) {
   d.Draw();
 }
 
+template<Drawable T>
+void test3_optimized(T d) {
+  d.Draw();
+}
+
+template<DetailDrawable T>
+void test3_optimized(T d) {
+  d.DetailDraw();
+}
+
 struct some {
   using name = int;
   void Draw() {
@@ -93,6 +103,9 @@ int main(int argc, char *argv[])
   // test3 supports both Drawable and DetailDrawable
   test3(some{});
   test3(some_other{});
+
+  test3_optimized(some{});
+  test3_optimized(some_other{});
 
   auto x = test4<int_lover>(24);
   printf("number is %d\n", x.x);
