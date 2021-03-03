@@ -25,6 +25,15 @@ void print_separator(Arg arg, Args... args) {
 
 
 /*
+ * sizeof... expression gives you the compile time count of a parameter pack.
+ */
+template<typename... Types>
+void how_many_types() {
+  std::cout << "Received " << sizeof...(Types) << " Types here :)" << std::endl;
+}
+
+
+/*
  * Utilize the friend method for operator << and == or other things used for similar purpose.
  */
 template<typename T>
@@ -49,4 +58,6 @@ int main() {
   print(a, "hello", 12);  // use the variadic method.
   print_separator<','>(a, "hello", 12);  // Custom separator.
   print_separator<'|'>(a, "world", 36);  // Custom separator.
+
+  how_many_types<int, double, char>();
 }
