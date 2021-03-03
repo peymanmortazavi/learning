@@ -34,6 +34,15 @@ void how_many_types() {
 
 
 /*
+ * Fold Expressions
+ */
+template<typename... Args>
+auto fold_sum(Args... args) {
+  return (... + args);
+}
+
+
+/*
  * Utilize the friend method for operator << and == or other things used for similar purpose.
  */
 template<typename T>
@@ -60,4 +69,6 @@ int main() {
   print_separator<'|'>(a, "world", 36);  // Custom separator.
 
   how_many_types<int, double, char>();
+
+  std::cout << "Fold Sum Result: " << fold_sum(1, 2, 3, 4, 5) << std::endl;
 }
