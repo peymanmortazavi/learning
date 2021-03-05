@@ -1,4 +1,5 @@
 #include <iostream>
+#include <type_traits>
 
 
 /*
@@ -41,6 +42,34 @@ auto fold_sum(Args... args) {
   return (... + args);
 }
 
+template<typename... Args>
+auto Add(const Args&... values) {
+  return (values + ...);
+}
+
+template<int Constant, typename... Args>
+auto AddWithOffset(const Args&... values) {
+  return Add(values + Constant ...);
+}
+
+template<typename T, typename... Rest>
+constexpr bool are_homogeneous_fold() {
+  return (std::is_same<T, Rest>::value && ...);
+}
+
+template<typename T, typename... Rest>
+struct are_homogeneous {
+  using type = T;
+  using inner_type = typename are_homogeneous<Rest...>::type;
+  static constexpr bool value = are_homogeneous<Rest...>::value && std::is_same<T, inner_type>::value;
+};
+
+template<typename T>
+struct are_homogeneous<T> {
+  using type = T;
+  static constexpr bool value = true;
+};
+
 
 /*
  * Utilize the friend method for operator << and == or other things used for similar purpose.
@@ -71,4 +100,11 @@ int main() {
   how_many_types<int, double, char>();
 
   std::cout << "Fold Sum Result: " << fold_sum(1, 2, 3, 4, 5) << std::endl;
+  std::cout << Add(1, 2, 3, 4) << std::endl;
+  std::cout << AddWithOffset<10>(1, 2, 3, 4) << std::endl;
+
+  std::cout << are_homogeneous_fold<int, int, int>() << std::endl;
+  std::cout << are_homogeneous<int, int, int>::value << std::endl;
+  std::cout << are_homogeneous_fold<int, int, double>() << std::endl;
+  std::cout << are_homogeneous<int, int, double>::value << std::endl;
 }
