@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
 /*
@@ -11,23 +10,23 @@ import (
 */
 
 // prereqs maps computer science courses to their prerequisites.
-var prereqs = map[string][]string{
-	"algorithms": {"data structures"},
-	"calculus":   {"linear algebra"},
+var prereqs = map[string]map[string]bool{
+	"algorithms": {"data structures": false},
+	"calculus":   {"linear algebra": false},
 
 	"compilers": {
-		"data structures",
-		"formal languages",
-		"computer organization",
+		"data structures":       false,
+		"formal languages":      false,
+		"computer organization": false,
 	},
 
-	"data structures":       {"discrete math"},
-	"databases":             {"data structures"},
-	"discrete math":         {"intro to programming"},
-	"formal languages":      {"discrete math"},
-	"networks":              {"operating systems"},
-	"operating systems":     {"data structures", "computer organization"},
-	"programming languages": {"data structures", "computer organization"},
+	"data structures":       {"discrete math": false},
+	"databases":             {"data structures": false},
+	"discrete math":         {"intro to programming": false},
+	"formal languages":      {"discrete math": false},
+	"networks":              {"operating systems": false},
+	"operating systems":     {"data structures": false, "computer organization": false},
+	"programming languages": {"data structures": false, "computer organization": false},
 }
 
 func main() {
@@ -36,27 +35,28 @@ func main() {
 	}
 }
 
-func topoSort(m map[string][]string) []string {
+func topoSort(m map[string]map[string]bool) []string {
 	var order []string
 	seen := make(map[string]bool)
-	var visitAll func(items []string)
+	var visitAll func(items map[string]bool)
 
-	visitAll = func(items []string) {
-		for _, k := range items {
-			if !seen[k] {
-				seen[k] = true
-				visitAll(m[k])
-				order = append(order, k)
+	visitAll = func(items map[string]bool) {
+		for key := range items {
+			if !seen[key] {
+				seen[key] = true
+				visitAll(m[key])
+				order = append(order, key)
 			}
 		}
 	}
 
-	keys := []string{}
+	keys := map[string]bool{}
 	for key := range m {
-		keys = append(keys, key)
+		//keys = append(keys, key)
+		keys[key] = false
 	}
 
-	sort.Strings(keys)
+	//sort.Strings(keys)
 	visitAll(keys)
 	return order
 }
